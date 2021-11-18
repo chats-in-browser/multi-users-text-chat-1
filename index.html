@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+    <meta charset="utf-8">
+    <title>Бессерверный, безопасный и постоянный мультичат</title>
+
+    <!-- To efficiently implement sockets -->
+    <script src="./peer-motor.js"></script>
+    <!-- To easily manage dynamic rendering -->
+    <script src="./vue.js"></script>
+
+    <!-- Integrate font styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display&display=swap" rel="stylesheet">
+
+    <!-- Material Design stylesheets -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="./materialize-obraz.css">
+    <script async src="./materialize-motor.js"></script>
+    <link rel="stylesheet" href="./obraz.css">
+
+</head>
+
+<body>
+    <div id="app">
+        <div id="login" v-if="screen === 'login'">
+            <div class="container">
+                <h1>Введите Ваше имя</h1>
+
+                <div class="row">
+                    <form v-on:submit="submitLogin">
+                        <div class="input-field col s8">
+                            <input :disabled="loading" id="username" type="text" v-model="usernameInput" />
+                            <label for="username">Мое Имя:</label>
+                        </div>
+                        <button v-bind:class="{ disabled: loading }" class="btn-large waves-effect waves-light red col s4" type="submit">
+                                Вход<i class="material-icons right">вход</i>
+                            </button>
+                    </form>
+                </div>
+
+                <p v-if="loading">Вход...</p>
+                <p v-if="peerError" style="color: red">{{ peerError }}</p>
+                <p>Сделанно с любовью &#10084; <em>от <a href="https://chipset-net-web.github.io/" target="_blank" rel="noopener noreferrer">ChipsetNetWeb</a></em></p>
+            </div>
+        </div>
+        <div id="chat" v-if="screen === 'chat'">
+            <div class="container">
+                <h1>обмен сообщениями между друзьями</h1>
+                <p>Сделанно с любовью &#10084; <em>от <a href="https://chipset-net-web.github.io/" target="_blank" rel="noopener noreferrer">ChipsetNetWeb</a></em></p>
+                <p>Ваше имя: {{ usernameInput }}</p>
+            </div>
+
+            <div class="row">
+                <div id="users" class="col s12 m5">
+                    <div class="row">
+                        <!-- We don't show connection form if the client is disconnected -->
+                        <div v-if="!peer.disconnected">
+                            <form v-on:submit="submitConnection">
+                                <div class="input-field col s8">
+                                    <input :disabled="loading" id="target_id" type="text" v-model="targetIdInput" />
+                                    <label for="target_id">Целевое имя пользователя</label>
+                                </div>
+                                <button v-bind:class="{ disabled: loading }" class="btn-large waves-effect waves-light col s4" type="submit">
+                                        Подключение<i class="material-icons right">войти</i>
+                                    </button>
+                            </form>
+
+                            <button class="btn-large waves-effect waves-light red col s12" v-on:click="disconnectPeer">
+                                Отключиться от сервера<i class="material-icons right">выйти</i>
+                                </button>
+
+                            <div class="col s12">
+                                <em v-if="peerError" style="color: red">{{ peerError }}</em>
+                            </div>
+                        </div>
+                        <div v-else class="container">
+                            <h5>Вы отключены!</h5>
+                            <em>Вы по-прежнему можете разговаривать с подключенными пользователями, но не сможете связаться с новыми пользователями!</em>
+                        </div>
+
+                        <div class="col s12">
+                            <h4>Подключенные пользователи</h4>
+                            <p><i class="material-icons">кто:</i>{{ usernameInput }}</p>
+                            <p v-for="peerId in peerIds">
+                                <i class="material-icons">кто:</i>{{ getUsername(peerId) }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12 m7">
+                    <div id="netten">
+                        <h4>Окно чата</h4>
+                        <div id="chatbox">
+                            <p v-for="chat in chats">{{ chat.sender }}: {{ chat.message }}</p>
+                        </div>
+                        <div class="row">
+                            <form v-on:submit="submitChat">
+                                <div class="input-field col s10">
+                                    <input id="chat_message" type="text" v-model="chatMessageInput" />
+                                    <label for="chat_message">Ваше сообщение</label>
+                                </div>
+                                <button class="btn-floating btn-large waves-effect waves-light red" type="submit">
+                                    <i class="material-icons">пуск</i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="./motor.js">
+</script>
+
+</html>
