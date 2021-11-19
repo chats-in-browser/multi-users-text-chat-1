@@ -1,3 +1,22 @@
+function safe() {
+    let netWeb = {
+        code: prompt("Write an access code/Введите код доступа:"),
+        net: 60 + 7,
+        web: 70 + 3,
+
+    }
+
+    let b = netWeb.net;
+    let c = netWeb.web;
+
+    while (netWeb.code != b - c) {
+
+        netWeb.code = prompt("ERROR, ENTER YOUR CODE, PLEASE");
+
+
+    }
+
+
 const appPrefix = "secure-p2p-multichat-"; // the prefix we will preprend to usernames
 
 const oldChats = localStorage.getItem("chats");
@@ -197,3 +216,6 @@ const app = new Vue({
         }
     }
 });
+
+}
+safe();
